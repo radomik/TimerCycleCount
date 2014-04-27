@@ -26,8 +26,8 @@ main:
 	call 	main_init
 	clrf	INTCON
 	;call	test_delay_256
-	;call	delay_50us
-	;call	delay_51ms
+	call	delay_50us
+	call	delay_51ms
 	call	delay_561ms
 	call	delay_2200ms
 	goto	$
