@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <limits.h>
 
 static const char *help = "\
 /** Program Wyznacza możliwie optymalne ustawienia timera TMR0 dla PIC16F8x\n\
@@ -169,18 +170,33 @@ static int calc_delay1(uint exp_cycle, uint exp_cycle_min) {
 }
 
 typedef struct {
+	uint	res_cycle;
+	uint	cycle_delta;
+	uchar	reg_tmr0_val;
+} added_delay;
+
+typedef struct {
 	uint	cycle_delta;	// must be first in struct for comparator
 	uint	res_cycle;
 	ushort	c_iter;
 	uchar	reg_tmr0_val;
 	uchar	prescaler_index;
+	added_delay	 ddel;
 } delay2_data;
+
+static int cmp_delay2_data(const void* a, const void* b) {
+	const delay2_data *da = (const delay2_data *)a;
+	const delay2_data *db = (const delay2_data *)b;
+	const uint del_a = (da->ddel.res_cycle) ? da->ddel.cycle_delta : da->cycle_delta;
+	const uint del_b = (db->ddel.res_cycle) ? db->ddel.cycle_delta : db->cycle_delta;
+	return del_b - del_a;
+}
 
 static void calc_delay2(uint exp_cycle, uint exp_cycle_min, uint max_iter) {
 	size_t		 data_size = PRESCALER_COUNT * 256 * max_iter, data_len = 0;
 	delay2_data	 *data = malloc(data_size * sizeof(delay2_data));
-	uint 		 res_cycle, tmr0_cycle;
-	ushort		 c_iter, tmr0_val;
+	uint 		 res_cycle, tmr0_cycle, cycle_delta;
+	ushort		 c_iter, tmr0_val, tmr0_val_2;
 	uchar		 presc_ind;
 	
 	assert(data);
@@ -199,11 +215,37 @@ static void calc_delay2(uint exp_cycle, uint exp_cycle_min, uint max_iter) {
 				if (res_cycle > exp_cycle) break;
 				
 				if (res_cycle >= exp_cycle_min) {
+					cycle_delta = exp_cycle - res_cycle;
 					data[data_len].res_cycle = res_cycle;
-					data[data_len].cycle_delta = exp_cycle - res_cycle;
+					data[data_len].cycle_delta = cycle_delta;
 					data[data_len].reg_tmr0_val = tmr0_val;
 					data[data_len].prescaler_index = presc_ind;
 					data[data_len].c_iter = c_iter;
+					
+					data[data_len].ddel.res_cycle = 0;
+					if (cycle_delta) { // find extra one delay call after loop
+						//printf("\npres: %hu, tmr0: %hu, res_cycle: %u\n", PRESCALER_VALUES[presc_ind], tmr0_val, res_cycle);
+			
+						for (tmr0_val_2 = 255; ;) {
+							res_cycle = 1 + cycle_delay_tmr0(presc_ind, tmr0_val_2);
+							
+							//printf("\n\tdelta: %u, tmr0_val_2: %hu, res_cycle: %u ",
+							//	cycle_delta, tmr0_val_2, res_cycle);
+							
+							if (res_cycle > cycle_delta) break;
+							
+							if (( (data[data_len].ddel.res_cycle == 0) || (res_cycle > data[data_len].ddel.res_cycle) ) ) {
+								//printf(" >> is new less");
+								data[data_len].ddel.res_cycle = res_cycle;
+								data[data_len].ddel.cycle_delta = cycle_delta - res_cycle;
+								data[data_len].ddel.reg_tmr0_val = tmr0_val_2;
+							}
+							
+							if (! tmr0_val_2) break;
+							tmr0_val_2--;
+						}
+					}
+					
 					data_len++;
 				}
 			}
@@ -212,17 +254,21 @@ static void calc_delay2(uint exp_cycle, uint exp_cycle_min, uint max_iter) {
 			tmr0_val--;
 		}
 	}
-	
+
 	if (! data_len) {
 		printf("### Nie znaleziono żadnych rozwiązań dla podanych parametrów i procedury delay2_\n");
 	}
 	else {
 		size_t i;
-		qsort(data, data_len, sizeof(delay2_data), cmp_delay_data);
+		qsort(data, data_len, sizeof(delay2_data), cmp_delay2_data);
 		for (i = 0; i < data_len; i++) {
-			printf("TMR0: %3d, PRES: %3hu, C_ITER: %5hu, CYCLE: %10u, DELTA: %u\n",
-				data[i].reg_tmr0_val, PRESCALER_VALUES[data[i].prescaler_index],
-				data[i].c_iter, data[i].res_cycle, data[i].cycle_delta);
+			printf("\nTMR0: %3d, PRES: %3hu, C_ITER: %5hu,            CYCLE:     %10u, DELTA:     %u\n",
+			data[i].reg_tmr0_val, PRESCALER_VALUES[data[i].prescaler_index],
+			data[i].c_iter, data[i].res_cycle, data[i].cycle_delta);
+			if (data[i].ddel.res_cycle != 0) {
+				printf("Add: movlw .%d ; call delay_tmr0 on end \tNEW_CYCLE: %10u, NEW_DELTA: %u\n",
+					data[i].ddel.reg_tmr0_val, data[i].res_cycle+data[i].ddel.res_cycle, data[i].ddel.cycle_delta);
+			}
 		}
 	}
 	
@@ -258,4 +304,6 @@ int main(int argc, char **argv) {
     
     return 0;
 }
+
+//TMR0:   9, PRES:  64, C_ITER:   139, CYCLE:    2199414, DELTA: 586
 
