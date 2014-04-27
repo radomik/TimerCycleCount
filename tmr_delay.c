@@ -192,7 +192,7 @@ static int cmp_delay2_data(const void* a, const void* b) {
 	return del_b - del_a;
 }
 
-static void calc_delay2(uint exp_cycle, uint exp_cycle_min, uint max_iter) {
+static void calc_delay2(uint exp_cycle, uint exp_cycle_min, uint max_iter, uint exp_delta) {
 	size_t		 data_size = PRESCALER_COUNT * 256 * max_iter, data_len = 0;
 	delay2_data	 *data = malloc(data_size * sizeof(delay2_data));
 	uint 		 res_cycle, tmr0_cycle, cycle_delta;
@@ -201,8 +201,8 @@ static void calc_delay2(uint exp_cycle, uint exp_cycle_min, uint max_iter) {
 	
 	assert(data);
 	
-	printf("\n### Obliczanie dla procedury delay2_:\n\texp_cycle: %u\n\texp_cycle_min: %u\n\tmax_iter: %u\n",
-		exp_cycle, exp_cycle_min, max_iter);
+	printf("\n### Obliczanie dla procedury delay2_:\n\texp_cycle: %u\n\texp_cycle_min: %u\n\texp_delta: %u\n\tmax_iter: %u\n",
+		exp_cycle, exp_cycle_min, exp_delta, max_iter);
 	
 	// foreach prescaler, foreach reg_tmr0 value and foreach count of iterations
 	for (presc_ind = 0; presc_ind < PRESCALER_COUNT; presc_ind++) {
@@ -214,7 +214,7 @@ static void calc_delay2(uint exp_cycle, uint exp_cycle_min, uint max_iter) {
 					
 				if (res_cycle > exp_cycle) break;
 				
-				if (res_cycle >= exp_cycle_min) {
+				//if (res_cycle >= exp_cycle_min) {
 					cycle_delta = exp_cycle - res_cycle;
 					data[data_len].res_cycle = res_cycle;
 					data[data_len].cycle_delta = cycle_delta;
@@ -246,8 +246,11 @@ static void calc_delay2(uint exp_cycle, uint exp_cycle_min, uint max_iter) {
 						}
 					}
 					
-					data_len++;
-				}
+					if ((cycle_delta <= exp_delta) || 
+						((data[data_len].ddel.res_cycle) && (data[data_len].ddel.cycle_delta <= exp_delta))) {
+							data_len++;
+						}
+				//}
 			}
 			
 			if (! tmr0_val) break;
@@ -299,7 +302,7 @@ int main(int argc, char **argv) {
 	int ret = calc_delay1(exp_cycle, exp_cycle_min);
 	
 	if (! ret) { // calc_delay1() nie znalazł rozwiązania nie wymagającego dodatkowego opoznienia
-		calc_delay2(exp_cycle, exp_cycle_min, max_iter);
+		calc_delay2(exp_cycle, exp_cycle_min, max_iter, exp_delta);
 	}
     
     return 0;
