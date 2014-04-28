@@ -182,19 +182,17 @@ delay_50us:				; 2 cykle call delay_
 
 ;; 51ms @ 4MHz TMR0
 delay_51ms:				; 2 cykle call delay1_
-	movlw	.27			; 1 cykl ( liczba wywolan delay_tmr0 )
+	movlw	.51			; 1 cykl ( liczba wywolan delay_tmr0 )
 	movwf	TMRCNT		; 1 cykl
-	call	init_presc_8; 12 cykli
+	call	init_presc_4; 12 cykli
 loop_51ms:
-	movlw	.22			; 1 cykl ( wartosc TMR0 )
+	movlw	.14			; 1 cykl ( wartosc TMR0 )
 	call	delay_tmr0	; 
 	decfsz	TMRCNT, f	; 1 / 2 cykle
 	goto	loop_51ms	; 2 / 0 cykli
 
-	movlw	.2			; 1 cykl
-	movwf	TMRCNT		; 1 cykl
-	decfsz	TMRCNT, f	; 1 / 2 cykle (2 kroki)
-	goto	$-1			; 2 / 0 cykli (2 kroki)
+	movlw	.34			; 1 cykl
+	call	delay_tmr0	;
 
 	return				; 2 cykle
 
@@ -342,7 +340,7 @@ init_presc_256:
 ;; 	T [cykle] = (256 - W)*(4/f_osc)*Presc + poprawka
 ;;  gdzie:
 ;;		W 	  - wartosc rejestru W na poczatku procedury {0...255}
-;;		f_osc - czestotliwosc zegara [Hz] (4000000 Hz dla ZL4PIC)
+;;		f_osc - czestotliwosc zegara [MHz] (4 MHz dla ZL4PIC)
 ;;		Presc - wartosc preskalera {2, 4, 8, 16, 32, 64, 128, 256}
 ;;		poprawka - dodatkowa liczba cykli okreslona ponizsza tabela
 ;; | Presc | poprawka [cykle]                         |
@@ -368,10 +366,10 @@ init_presc_256:
 ;; |  128  | 138           | 32778   ; W={0}   |
 ;; |  256  | 267           | 65547   ; W={0}   |
 delay_tmr0:
-	movwf	TMR0
+	movwf	TMR0				; TMR0 = W (parametr procedury)
 	nop
-	btfss	INTCON, TMR0IF		; czekamy na przepe³nienie licznika (256 krokow)
-		goto	$-1
+	btfss	INTCON, TMR0IF		; czekamy na przepe³nienie licznika
+		goto	$-1				; czekaj dopóki INTCON<TMR0IF> jest wyzerowany
 
 	bcf		INTCON, TMR0IF		; wyczyszczenie flagi przepelnienia
 	return

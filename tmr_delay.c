@@ -15,19 +15,21 @@ static const char *help = "\
  *      movlw   c_tmr0                  ; 1 cykl (początkowa wartość rejestru TMR0)\n\
  *      call    init_presc__c_presc     ; 12 cykli (inicjalizacja preskalera)\n\
  *      call    delay_tmr0              ; zależy od c_tmr0 i c_presc\n\
- *      < dodatkowe opóźnienie >\n\
+ *      < dodatkowe opóźnienie >        ; opcjonalnie\n\
  *      return                          ; 2 cykle\n\
  *\n\
  * delay2_Xcykli:                       ; 2 cykle call delay1_\n\
  *      movlw   c_iter                  ; 1 cykl ( liczba wywołań delay_tmr0 )\n\
  *      movwf   TMRCNT                  ; 1 cykl\n\
  *      call    init_presc__c_presc     ; 12 cykli (inicjalizacja preskalera)\n\
- * loop_delay2:                         ; pętla wykonująca się TMRCNT razy\n\
+ * loop_delay2_X:                       ; pętla wykonująca się TMRCNT razy\n\
  *      movlw   c_tmr0                  ; 1 cykl\n\
  *      call    delay_tmr0              ; zależy od c_tmr0 i c_presc\n\
  *      decfsz  TMRCNT, f               ; 1 / 2 cykle\n\
- *      goto    loop_delay2             ; 2 / 0 cykli\n\
- *      < dodatkowe opóźnienie >\n\
+ *      goto    loop_delay2_X           ; 2 / 0 cykli\n\
+ *      movlw   c_ddel                  ; opcjonalnie - odmierzenie dodatkowego opoznienia  TMR0\n\
+ *      call    delay_tmr0              ; opcjonalnie\n\
+ *      < dodatkowe opóźnienie >        ; opcjonalnie\n\
  *      return                          ; 2 cykle\n\
  *\n\
  * @endcode\n\
@@ -37,7 +39,8 @@ static const char *help = "\
  *      argv[2]     - exp_delta     - maksymalna liczba cykli opóźnienia jakie należy umieścić w polu: < dodatkowe opóźnienie >\n\
  *      argv[3]     - max_iter      - maksymalna liczba iteracji c_iter w procedurze delay2_\n\
  *\n\
- * Program wyznacza wartości c_tmr0, c_presc, c_iter pozwalające wygenerować zadane opóżnienie\n\
+ * Program wyznacza wartości: c_tmr0, c_presc, c_iter, c_ddel oraz < dodatkowe opóźnienie >\n\
+ * pozwalające wygenerować zadane opóżnienie\n\
  * dla odpowiedniej procedury opóźniającej\n\
  *  Użycie:\n\
  *      ./tmr_delay <exp_cycle> <exp_delta> <max_iter>\n\
@@ -90,14 +93,6 @@ static uint prescaler_correct_357(ushort reg_tmr0_val) {
 /// @returns T [cykle] = (256 - W)*(4/f_osc)*Presc + poprawka
 static uint cycle_delay_tmr0(uchar preskaler_index, 
 							 ushort reg_tmr0_val) {
-	/*printf("preskaler_index: %d\n", preskaler_index);
-	printf("reg_tmr0_val:    %hu\n", reg_tmr0_val);
-	printf("(((256 - reg_tmr0_val) << 2): %u\n", (uint)((256 - reg_tmr0_val) << 2));
-	printf("PRESCALER_VALUES[preskaler_index]): %u\n", (uint)(PRESCALER_VALUES[preskaler_index]));
-	printf("F_CPU_CLOCK: %u\n", F_CPU_CLOCK);
-	printf("%u %u\n", 
-		(((256 - reg_tmr0_val) << 2) * PRESCALER_VALUES[preskaler_index]) / F_CPU_CLOCK,
-		PRESCALER_CORRECT_CB[preskaler_index](reg_tmr0_val));*/
 	return (((256 - reg_tmr0_val) << 2) * PRESCALER_VALUES[preskaler_index]) / F_CPU_CLOCK + 
 			PRESCALER_CORRECT_CB[preskaler_index](reg_tmr0_val);
 }
@@ -124,7 +119,6 @@ static int calc_delay1(uint exp_cycle, uint exp_cycle_min) {
 	uchar		 presc_ind;
 	
 	assert(data);
-	
 	
 	printf("\n### Obliczanie dla procedury delay1_:\n\texp_cycle: %u\n\texp_cycle_min: %u\n",
 		exp_cycle, exp_cycle_min);
@@ -269,12 +263,11 @@ static void calc_delay2(uint exp_cycle, uint exp_cycle_min, uint max_iter, uint 
 			data[i].reg_tmr0_val, PRESCALER_VALUES[data[i].prescaler_index],
 			data[i].c_iter, data[i].res_cycle, data[i].cycle_delta);
 			if (data[i].ddel.res_cycle != 0) {
-				printf("Add: movlw .%d ; call delay_tmr0 on end \tNEW_CYCLE: %10u, NEW_DELTA: %u\n",
+				printf("Add: movlw .%3d ; call delay_tmr0 on end        NEW_CYCLE: %10u, NEW_DELTA: %u\n",
 					data[i].ddel.reg_tmr0_val, data[i].res_cycle+data[i].ddel.res_cycle, data[i].ddel.cycle_delta);
 			}
 		}
 	}
-	
 	free(data);
 }
 
@@ -307,6 +300,4 @@ int main(int argc, char **argv) {
     
     return 0;
 }
-
-//TMR0:   9, PRES:  64, C_ITER:   139, CYCLE:    2199414, DELTA: 586
 
