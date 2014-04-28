@@ -16,11 +16,6 @@ PGM	CODE
 
 ;; Zmienne
 TMRCNT	equ		0x20
-TMR0VAL	equ		0x21
-
-;; bity rejestru OPTION_REG
-TMR0CS	equ	5
-TMR0SE	equ	4
 
 main:
 	call 	main_init
@@ -48,13 +43,13 @@ main_init:
 ;; Procedura testowa opoznienia TMR0 z uzyciem preskalera 1/2
 test_delay_2:
 	movlw	.255	; testowane opoznienia od tej wartosci TMR0 do zera	
-	movwf	TMR0VAL
-	call	init_presc_2; 12 cykli - inicjalizacja preskalera
+	movwf	TMRCNT
+	call	init_presc_2; 10 cykli - inicjalizacja preskalera
 loop_test_2:
-	movf	TMR0VAL, 0	; W = kolejna wartosc TMR0 do testow
+	movf	TMRCNT, 0	; W = kolejna wartosc TMR0 do testow
 	
 	call	delay_tmr0	
-	decfsz	TMR0VAL, 1
+	decfsz	TMRCNT, 1
 	goto	loop_test_2
 
 	clrw				; test dla TMR0 = 0
@@ -64,13 +59,13 @@ loop_test_2:
 ;; Procedura testowa opoznienia TMR0 z uzyciem preskalera 1/4
 test_delay_4:
 	movlw	.255	; testowane opoznienia od tej wartosci TMR0 do zera	
-	movwf	TMR0VAL
-	call	init_presc_4; 12 cykli - inicjalizacja preskalera
+	movwf	TMRCNT
+	call	init_presc_4; 10 cykli - inicjalizacja preskalera
 loop_test_4:
-	movf	TMR0VAL, 0	; W = kolejna wartosc TMR0 do testow
+	movf	TMRCNT, 0	; W = kolejna wartosc TMR0 do testow
 	
 	call	delay_tmr0
-	decfsz	TMR0VAL, 1
+	decfsz	TMRCNT, 1
 	goto	loop_test_4
 
 	clrw			   ; test dla TMR0 = 0
@@ -80,13 +75,13 @@ loop_test_4:
 ;; Procedura testowa opoznienia TMR0 z uzyciem preskalera 1/8
 test_delay_8:
 	movlw	.255	; testowane opoznienia od tej wartosci TMR0 do zera	
-	movwf	TMR0VAL
-	call	init_presc_8; 12 cykli - inicjalizacja preskalera
+	movwf	TMRCNT
+	call	init_presc_8; 10 cykli - inicjalizacja preskalera
 loop_test_8:
-	movf	TMR0VAL, 0	; W = kolejna wartosc TMR0 do testow
+	movf	TMRCNT, 0	; W = kolejna wartosc TMR0 do testow
 	
 	call	delay_tmr0
-	decfsz	TMR0VAL, 1
+	decfsz	TMRCNT, 1
 	goto	loop_test_8
 
 	clrw				; test dla TMR0 = 0
@@ -96,13 +91,13 @@ loop_test_8:
 ;; Procedura testowa opoznienia TMR0 z uzyciem preskalera 1/16
 test_delay_16:
 	movlw	.255	; testowane opoznienia od tej wartosci TMR0 do zera	
-	movwf	TMR0VAL
-	call	init_presc_16; 12 cykli - inicjalizacja preskalera
+	movwf	TMRCNT
+	call	init_presc_16; 10 cykli - inicjalizacja preskalera
 loop_test_16:
-	movf	TMR0VAL, 0	; W = kolejna wartosc TMR0 do testow
+	movf	TMRCNT, 0	; W = kolejna wartosc TMR0 do testow
 	
 	call	delay_tmr0
-	decfsz	TMR0VAL, 1
+	decfsz	TMRCNT, 1
 	goto	loop_test_16
 
 	clrw				; test dla TMR0 = 0
@@ -112,13 +107,13 @@ loop_test_16:
 ;; Procedura testowa opoznienia TMR0 z uzyciem preskalera 1/32
 test_delay_32:
 	movlw	.255	; testowane opoznienia od tej wartosci TMR0 do zera	
-	movwf	TMR0VAL
-	call	init_presc_32; 12 cykli - inicjalizacja preskalera
+	movwf	TMRCNT
+	call	init_presc_32; 10 cykli - inicjalizacja preskalera
 loop_test_32:
-	movf	TMR0VAL, 0
+	movf	TMRCNT, 0
 	
 	call	delay_tmr0
-	decfsz	TMR0VAL, 1
+	decfsz	TMRCNT, 1
 	goto	loop_test_32
 
 	clrw				; test dla TMR0 = 0
@@ -128,13 +123,13 @@ loop_test_32:
 ;; Procedura testowa opoznienia TMR0 z uzyciem preskalera 1/64
 test_delay_64:
 	movlw	.255	; testowane opoznienia od tej wartosci TMR0 do zera	
-	movwf	TMR0VAL
-	call	init_presc_64; 12 cykli - inicjalizacja preskalera
+	movwf	TMRCNT
+	call	init_presc_64; 10 cykli - inicjalizacja preskalera
 loop_test_64:
-	movf	TMR0VAL, 0
+	movf	TMRCNT, 0
 	
 	call	delay_tmr0
-	decfsz	TMR0VAL, 1
+	decfsz	TMRCNT, 1
 	goto	loop_test_64
 
 	clrw				; test dla TMR0 = 0
@@ -144,13 +139,13 @@ loop_test_64:
 ;; Procedura testowa opoznienia TMR0 z uzyciem preskalera 1/128
 test_delay_128:
 	movlw	.255	; testowane opoznienia od tej wartosci TMR0 do zera	
-	movwf	TMR0VAL
-	call	init_presc_128; 12 cykli - inicjalizacja preskalera
+	movwf	TMRCNT
+	call	init_presc_128; 10 cykli - inicjalizacja preskalera
 loop_test_128:
-	movf	TMR0VAL, 0
+	movf	TMRCNT, 0
 	
 	call	delay_tmr0
-	decfsz	TMR0VAL, 1
+	decfsz	TMRCNT, 1
 	goto	loop_test_128
 
 	clrw				; test dla TMR0 = 0
@@ -160,13 +155,13 @@ loop_test_128:
 ;; Procedura testowa opoznienia TMR0 z uzyciem preskalera 1/256
 test_delay_256:
 	movlw	.255	; testowane opoznienia od tej wartosci TMR0 do zera	
-	movwf	TMR0VAL	
-	call	init_presc_256; 12 cykli - inicjalizacja preskalera
+	movwf	TMRCNT	
+	call	init_presc_256; 10 cykli - inicjalizacja preskalera
 loop_test_256:
-	movf	TMR0VAL, 0
+	movf	TMRCNT, 0
 	
 	call	delay_tmr0
-	decfsz	TMR0VAL, 1
+	decfsz	TMRCNT, 1
 	goto	loop_test_256
 
 	clrw				; test dla TMR0 = 0
@@ -175,39 +170,40 @@ loop_test_256:
 
 ;; 50us @ 4MHz, TMR0=245, Presc=2
 delay_50us:				; 2 cykle call delay_
+	call	init_presc_2; 10 cykli
 	movlw	d'245'		; 1 cykl
-	call	init_presc_2; 12 cykli
 	call	delay_tmr0	; 33 cykli
+	goto	$+1			; 2 cykle
 	return				; 2 cykle
 
 ;; 51ms @ 4MHz TMR0
 delay_51ms:				; 2 cykle call delay1_
-	movlw	.51			; 1 cykl ( liczba wywolan delay_tmr0 )
+	movlw	.50			; 1 cykl ( liczba wywolan delay_tmr0 )
 	movwf	TMRCNT		; 1 cykl
-	call	init_presc_4; 12 cykli
+	call	init_presc_4; 10 cykli
 loop_51ms:
-	movlw	.14			; 1 cykl ( wartosc TMR0 )
+	movlw	.10			; 1 cykl ( wartosc TMR0 )
 	call	delay_tmr0	; 
 	decfsz	TMRCNT, f	; 1 / 2 cykle
 	goto	loop_51ms	; 2 / 0 cykli
 
-	movlw	.34			; 1 cykl
+	movlw	.13			; 1 cykl
 	call	delay_tmr0	;
 
 	return				; 2 cykle
 
 ;; 561ms @ 4MHz TMR0
 delay_561ms:			; 2 cykle call delay1_
-	movlw	.42			; 1 cykl ( liczba wywolan delay_tmr0 )
+	movlw	.35			; 1 cykl ( liczba wywolan delay_tmr0 )
 	movwf	TMRCNT		; 1 cykl
-	call	init_presc_64; 12 cykli
+	call	init_presc_64; 10 cykli
 loop_561ms:
-	movlw	.53			; 1 cykl ( wartosc TMR0 )
+	movlw	.12			; 1 cykl ( wartosc TMR0 )
 	call	delay_tmr0	; 
 	decfsz	TMRCNT, f	; 1 / 2 cykle
 	goto	loop_561ms	; 2 / 0 cykli
 	
-	movlw	.26
+	movlw	.39
 	call	delay_tmr0
 
 	return				; 2 cykle
@@ -216,7 +212,7 @@ loop_561ms:
 delay_2200ms:			; 2 cykle call delay1_
 	movlw	.45			; 1 cykl ( liczba wywolan delay_tmr0 )
 	movwf	TMRCNT		; 1 cykl
-	call	init_presc_256; 12 cykli
+	call	init_presc_256; 10 cykli
 loop_2200ms:
 	movlw	.69			; 1 cykl ( wartosc TMR0 )
 	call	delay_tmr0	; 
@@ -225,6 +221,7 @@ loop_2200ms:
 
 	movlw	.80			; dodatkowe opoznienie
 	call	delay_tmr0	;
+	goto	$+1
 	nop
 	return				; 2 cykle
 
@@ -232,12 +229,10 @@ loop_2200ms:
 ;; Czas wykonania: 12 cykli
 init_presc_2:
 	bsf 	STATUS, RP0 ; wybór banku 1 w celu uzyskania dostêpu do OPTION_REG
-	bcf		OPTION_REG, TMR0CS	; czestotliwosc taktowania TMR0: zegar wewnetrzny / 4
-	bcf		OPTION_REG, TMR0SE	; zwiêkszenie wartosci TMR0 przy narastajacym zboczu na RA4/TOCKI
-	bcf		OPTION_REG, PSA		; preskaler przyporzadkowany do TMR0
-	bcf		OPTION_REG, PS2		; ustawienie preskalera
-	bcf		OPTION_REG, PS1		; ...
-	bcf		OPTION_REG, PS0		; ... na 1/2
+	movf	OPTION_REG, 0
+	andlw	b'10000000'	; wyczysc szystkie bity poza (7)
+	iorlw	b'01000000'	; INTEDG=1, T0CS=0, T0SE=0, PSA=0, PS = 1/2
+	movwf	OPTION_REG
 	bcf		STATUS, RP0 ; wybór banku 0
 	return
 
@@ -245,12 +240,10 @@ init_presc_2:
 ;; Czas wykonania: 12 cykli
 init_presc_4:
 	bsf 	STATUS, RP0 ; wybór banku 1 w celu uzyskania dostêpu do OPTION_REG
-	bcf		OPTION_REG, TMR0CS	; czestotliwosc taktowania TMR0: zegar wewnetrzny / 4
-	bcf		OPTION_REG, TMR0SE	; zwiêkszenie wartosci TMR0 przy narastajacym zboczu na RA4/TOCKI
-	bcf		OPTION_REG, PSA		; preskaler przyporzadkowany do TMR0
-	bcf		OPTION_REG, PS2		; ustawienie preskalera
-	bcf		OPTION_REG, PS1		; ...
-	bsf		OPTION_REG, PS0		; ... na 1/4
+	movf	OPTION_REG, 0
+	andlw	b'10000000'	; wyczysc szystkie bity poza (7)
+	iorlw	b'01000001'	; INTEDG=1, T0CS=0, T0SE=0, PSA=0, PS = 1/4
+	movwf	OPTION_REG
 	bcf		STATUS, RP0 ; wybór banku 0
 	return
 
@@ -258,12 +251,10 @@ init_presc_4:
 ;; Czas wykonania: 12 cykli
 init_presc_8:
 	bsf 	STATUS, RP0 ; wybór banku 1 w celu uzyskania dostêpu do OPTION_REG
-	bcf		OPTION_REG, TMR0CS	; czestotliwosc taktowania TMR0: zegar wewnetrzny / 4
-	bcf		OPTION_REG, TMR0SE	; zwiêkszenie wartosci TMR0 przy narastajacym zboczu na RA4/TOCKI
-	bcf		OPTION_REG, PSA		; preskaler przyporzadkowany do TMR0
-	bcf		OPTION_REG, PS2		; ustawienie preskalera
-	bsf		OPTION_REG, PS1		; ...
-	bcf		OPTION_REG, PS0		; ... na 1/8
+	movf	OPTION_REG, 0
+	andlw	b'10000000'	; wyczysc szystkie bity poza (7)
+	iorlw	b'01000010'	; INTEDG=1, T0CS=0, T0SE=0, PSA=0, PS = 1/8
+	movwf	OPTION_REG
 	bcf		STATUS, RP0 ; wybór banku 0
 	return
 
@@ -271,12 +262,10 @@ init_presc_8:
 ;; Czas wykonania: 12 cykli
 init_presc_16:
 	bsf 	STATUS, RP0 ; wybór banku 1 w celu uzyskania dostêpu do OPTION_REG
-	bcf		OPTION_REG, TMR0CS	; czestotliwosc taktowania TMR0: zegar wewnetrzny / 4
-	bcf		OPTION_REG, TMR0SE	; zwiêkszenie wartosci TMR0 przy narastajacym zboczu na RA4/TOCKI
-	bcf		OPTION_REG, PSA		; preskaler przyporzadkowany do TMR0
-	bcf		OPTION_REG, PS2		; ustawienie preskalera
-	bsf		OPTION_REG, PS1		; ...
-	bsf		OPTION_REG, PS0		; ... na 1/16
+	movf	OPTION_REG, 0
+	andlw	b'10000000'	; wyczysc wszystkie bity poza (7)
+	iorlw	b'01000011'	; INTEDG=1, T0CS=0, T0SE=0, PSA=0, PS = 1/16
+	movwf	OPTION_REG
 	bcf		STATUS, RP0 ; wybór banku 0
 	return
 
@@ -284,12 +273,10 @@ init_presc_16:
 ;; Czas wykonania: 12 cykli
 init_presc_32:
 	bsf 	STATUS, RP0 ; wybór banku 1 w celu uzyskania dostêpu do OPTION_REG
-	bcf		OPTION_REG, TMR0CS	; czestotliwosc taktowania TMR0: zegar wewnetrzny / 4
-	bcf		OPTION_REG, TMR0SE	; zwiêkszenie wartosci TMR0 przy narastajacym zboczu na RA4/TOCKI
-	bcf		OPTION_REG, PSA		; preskaler przyporzadkowany do TMR0
-	bsf		OPTION_REG, PS2		; ustawienie preskalera
-	bcf		OPTION_REG, PS1		; ...
-	bcf		OPTION_REG, PS0		; ... na 1/32
+	movf	OPTION_REG, 0
+	andlw	b'10000000'	; wyczysc szystkie bity poza (7)
+	iorlw	b'01000100'	; INTEDG=1, T0CS=0, T0SE=0, PSA=0, PS = 1/32
+	movwf	OPTION_REG
 	bcf		STATUS, RP0 ; wybór banku 0
 	return
 
@@ -297,12 +284,10 @@ init_presc_32:
 ;; Czas wykonania: 12 cykli
 init_presc_64:
 	bsf 	STATUS, RP0 ; wybór banku 1 w celu uzyskania dostêpu do OPTION_REG
-	bcf		OPTION_REG, TMR0CS	; czestotliwosc taktowania TMR0: zegar wewnetrzny / 4
-	bcf		OPTION_REG, TMR0SE	; zwiêkszenie wartosci TMR0 przy narastajacym zboczu na RA4/TOCKI
-	bcf		OPTION_REG, PSA		; preskaler przyporzadkowany do TMR0
-	bsf		OPTION_REG, PS2		; ustawienie preskalera
-	bcf		OPTION_REG, PS1		; ...
-	bsf		OPTION_REG, PS0		; ... na 1/64
+	movf	OPTION_REG, 0
+	andlw	b'10000000'	; wyczysc szystkie bity poza (7)
+	iorlw	b'01000101'	; INTEDG=1, T0CS=0, T0SE=0, PSA=0, PS = 1/64
+	movwf	OPTION_REG
 	bcf		STATUS, RP0 ; wybór banku 0
 	return
 
@@ -310,12 +295,10 @@ init_presc_64:
 ;; Czas wykonania: 12 cykli
 init_presc_128:
 	bsf 	STATUS, RP0 ; wybór banku 1 w celu uzyskania dostêpu do OPTION_REG
-	bcf		OPTION_REG, TMR0CS	; czestotliwosc taktowania TMR0: zegar wewnetrzny / 4
-	bcf		OPTION_REG, TMR0SE	; zwiêkszenie wartosci TMR0 przy narastajacym zboczu na RA4/TOCKI
-	bcf		OPTION_REG, PSA		; preskaler przyporzadkowany do TMR0
-	bsf		OPTION_REG, PS2		; ustawienie preskalera
-	bsf		OPTION_REG, PS1		; ...
-	bcf		OPTION_REG, PS0		; ... na 1/128
+	movf	OPTION_REG, 0
+	andlw	b'10000000'	; wyczysc szystkie bity poza (7)
+	iorlw	b'01000110'	; INTEDG=1, T0CS=0, T0SE=0, PSA=0, PS = 1/128
+	movwf	OPTION_REG
 	bcf		STATUS, RP0 ; wybór banku 0
 	return
 
@@ -323,12 +306,10 @@ init_presc_128:
 ;; Czas wykonania: 12 cykli
 init_presc_256:
 	bsf 	STATUS, RP0 ; wybór banku 1 w celu uzyskania dostêpu do OPTION_REG
-	bcf		OPTION_REG, TMR0CS	; czestotliwosc taktowania TMR0: zegar wewnetrzny / 4
-	bcf		OPTION_REG, TMR0SE	; zwiêkszenie wartosci TMR0 przy narastajacym zboczu na RA4/TOCKI
-	bcf		OPTION_REG, PSA		; preskaler przyporzadkowany do TMR0
-	bsf		OPTION_REG, PS2		; ustawienie preskalera
-	bsf		OPTION_REG, PS1		; ...
-	bsf		OPTION_REG, PS0		; ... na 1/256
+	movf	OPTION_REG, 0
+	andlw	b'10000000'	; wyczysc szystkie bity poza (7)
+	iorlw	b'01000111'	; INTEDG=1, T0CS=0, T0SE=0, PSA=0, PS = 1/256
+	movwf	OPTION_REG
 	bcf		STATUS, RP0 ; wybór banku 0
 	return
 

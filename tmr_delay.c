@@ -12,8 +12,8 @@ static const char *help = "\
  * Wyznaczanie odbywa się w oparciu o dwa szkielety procedur opóźniających:\n\
  * @code\n\
  * delay1_Xcykli:                       ; 2 cykle call delay1_\n\
+ *      call    init_presc__c_presc     ; 10 cykli (inicjalizacja preskalera)\n\
  *      movlw   c_tmr0                  ; 1 cykl (początkowa wartość rejestru TMR0)\n\
- *      call    init_presc__c_presc     ; 12 cykli (inicjalizacja preskalera)\n\
  *      call    delay_tmr0              ; zależy od c_tmr0 i c_presc\n\
  *      < dodatkowe opóźnienie >        ; opcjonalnie\n\
  *      return                          ; 2 cykle\n\
@@ -21,7 +21,7 @@ static const char *help = "\
  * delay2_Xcykli:                       ; 2 cykle call delay1_\n\
  *      movlw   c_iter                  ; 1 cykl ( liczba wywołań delay_tmr0 )\n\
  *      movwf   TMRCNT                  ; 1 cykl\n\
- *      call    init_presc__c_presc     ; 12 cykli (inicjalizacja preskalera)\n\
+ *      call    init_presc__c_presc     ; 10 cykli (inicjalizacja preskalera)\n\
  * loop_delay2_X:                       ; pętla wykonująca się TMRCNT razy\n\
  *      movlw   c_tmr0                  ; 1 cykl\n\
  *      call    delay_tmr0              ; zależy od c_tmr0 i c_presc\n\
@@ -54,8 +54,8 @@ typedef unsigned short ushort;
 
 static const uint F_CPU_CLOCK = 4;	// cpu clock frequency in MHz
 
-static const uchar DELAY1_CONST_CYCLES = 17;
-static const uchar DELAY2_CONST_CYCLES = 18;
+static const uchar DELAY1_CONST_CYCLES = 15;
+static const uchar DELAY2_CONST_CYCLES = 16;
 
 static const ushort PRESCALER_VALUES[PRESCALER_COUNT] = {
 	2, 4, 8, 16, 32, 64, 128, 256
